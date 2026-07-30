@@ -1,0 +1,29 @@
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+
+# --- Virtual environments ---
+.venv/
+venv/
+env/
+ENV/
+
+# --- pytest ---
+.pytest_cache/
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+
+# --- Secrets ---
+# data/config.json holds the public OrangeHRM demo credentials, so it is
+# committed on purpose. Real credentials belong in an untracked .env.
+.env
+*.env
+
+# NOTE: reports/ and videos/ are deliberately NOT ignored - the assignment
+# requires the HTML report and the test run video to be in the repository.
