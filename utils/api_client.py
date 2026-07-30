@@ -1,4 +1,4 @@
-# Package: utils
+﻿# Package: utils
 # Class: EmployeeApi
 
 import logging
@@ -18,7 +18,7 @@ class EmployeeApi:
     this a genuine API-vs-UI cross check rather than a separate session.
     """
 
-    def __init__(self, page: Page) -> None:
+    def __init__(self, page: Page):
         self._request = page.request
         # empNumber is the API's internal key and never changes for a record,
         # so looking it up once keeps the slow demo site out of the critical path.
@@ -65,7 +65,7 @@ class EmployeeApi:
         log.info("API confirms employee %s exists and matches the UI", employee_id)
         return employee
 
-    def verify_job_details(self, details: dict, job_title: str, employment_status: str) -> None:
+    def verify_job_details(self, details: dict, job_title: str, employment_status: str):
         """Confirms an already-fetched job-details payload matches the UI.
 
         Takes the payload rather than fetching it, so the caller can also report
@@ -80,7 +80,7 @@ class EmployeeApi:
             f"API vs UI mismatch on Employment Status: API={api_status} UI={employment_status}"
         log.info("API job details match the UI: %s / %s", api_title, api_status)
 
-    def verify_employee_deleted(self, employee_id: str) -> None:
+    def verify_employee_deleted(self, employee_id: str):
         records = self.search(employee_id)
         assert not records, f"Employee {employee_id} still present in API after deletion"
         self._employee_numbers.pop(employee_id, None)

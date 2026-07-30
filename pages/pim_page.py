@@ -1,4 +1,4 @@
-# Package: pages
+﻿# Package: pages
 # Class: PIMPage
 
 import logging
@@ -24,7 +24,7 @@ class PIMPage(BasePage):
     _EDIT_ICON = ".bi-pencil-fill"
     _DELETE_ICON = ".bi-trash"
 
-    def __init__(self, page: Page) -> None:
+    def __init__(self, page: Page):
         super().__init__(page)
         self.pim_menu = page.get_by_role("link", name="PIM")
         self.add_employee_tab = page.get_by_role("link", name="Add Employee")
@@ -43,13 +43,13 @@ class PIMPage(BasePage):
         self.personal_details_heading = page.get_by_role("heading", name="Personal Details")
 
     # ----------------------------------------------------------- navigation
-    def navigate_to_add_employee(self) -> None:
+    def navigate_to_add_employee(self):
         self.pim_menu.click()
         self.add_employee_tab.click()
         self.page.wait_for_url("**/pim/addEmployee")
         self.first_name.wait_for(state="visible")
 
-    def open_job_tab(self) -> None:
+    def open_job_tab(self):
         self.job_tab.click()
         self.page.wait_for_url("**/pim/viewJobDetails/**")
         self.group_by_label(self.JOB_TITLE_LABEL).locator(
@@ -93,7 +93,7 @@ class PIMPage(BasePage):
         assert count == 1, f"Expected exactly 1 result row for {employee_id}, found {count}"
         return rows
 
-    def search_employee_by_id(self, employee_id: str) -> None:
+    def search_employee_by_id(self, employee_id: str):
         self.pim_menu.click()
         self.employee_list_tab.click()
         self.page.wait_for_url("**/pim/viewEmployeeList")
@@ -106,7 +106,7 @@ class PIMPage(BasePage):
         log.info("Found employee %s in the employee list", employee_id)
 
     # ---------------------------------------------------------------- edit
-    def edit_employee(self, employee_id: str) -> None:
+    def edit_employee(self, employee_id: str):
         self.employee_row(employee_id).locator(self._EDIT_ICON).click()
         self.page.wait_for_url("**/pim/viewPersonalDetails/**")
         self.personal_details_heading.wait_for(state="visible")
@@ -127,7 +127,7 @@ class PIMPage(BasePage):
             "employment_status": self.selected_option(self.EMPLOYMENT_STATUS_LABEL),
         }
 
-    def reload_job_tab(self) -> None:
+    def reload_job_tab(self):
         """Re-reads the record from the server so the check is not just the
         values left in the form after saving.
 
@@ -142,7 +142,7 @@ class PIMPage(BasePage):
         )
 
     # -------------------------------------------------------------- delete
-    def delete_employee(self, employee_id: str) -> None:
+    def delete_employee(self, employee_id: str):
         self.employee_row(employee_id).locator(self._DELETE_ICON).click()
         self.confirm_delete.click()
         log.info("Confirmed deletion of employee %s", employee_id)

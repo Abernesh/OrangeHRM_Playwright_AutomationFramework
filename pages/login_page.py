@@ -1,4 +1,4 @@
-# Package: pages
+﻿# Package: pages
 # Class: LoginPage
 
 import logging
@@ -12,7 +12,7 @@ log = logging.getLogger("orangehrm")
 
 
 class LoginPage(BasePage):
-    def __init__(self, page: Page) -> None:
+    def __init__(self, page: Page):
         super().__init__(page)
         self.username_input = page.get_by_placeholder("Username")
         self.password_input = page.get_by_placeholder("Password")
@@ -21,13 +21,13 @@ class LoginPage(BasePage):
         self.logout_link = page.get_by_role("menuitem", name="Logout")
         self.dashboard_heading = page.get_by_role("heading", name="Dashboard")
 
-    def navigate(self) -> None:
+    def navigate(self):
         # domcontentloaded, not the default "load": the demo site keeps loading
         # assets long after the form is usable, and we wait for it explicitly.
         self.page.goto(BASE_URL, wait_until="domcontentloaded")
         self.login_button.wait_for(state="visible")
 
-    def login(self, username: str, password: str) -> None:
+    def login(self, username: str, password: str):
         self.username_input.fill(username)
         self.password_input.fill(password)
         self.login_button.click()
@@ -46,7 +46,7 @@ class LoginPage(BasePage):
             log.error("Dashboard did not appear; current URL is %s", self.page.url)
             return False
 
-    def logout(self) -> None:
+    def logout(self):
         self.user_dropdown.click()
         self.logout_link.click()
         self.page.wait_for_url(LOGIN_URL)

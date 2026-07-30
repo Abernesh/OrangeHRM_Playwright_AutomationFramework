@@ -1,4 +1,4 @@
-# Package: pages
+﻿# Package: pages
 # Class: BasePage
 
 import logging
@@ -30,7 +30,7 @@ class BasePage:
     _SUCCESS_TOAST = ".oxd-toast-content--success"
     _FIELD_ERROR = ".oxd-input-field-error-message"
 
-    def __init__(self, page: Page) -> None:
+    def __init__(self, page: Page):
         self.page = page
 
     # ------------------------------------------------------------- locators
@@ -42,7 +42,7 @@ class BasePage:
         return self.group_by_label(label).locator("input")
 
     # ----------------------------------------------------------- dropdowns
-    def select_option(self, label: str, value: str) -> None:
+    def select_option(self, label: str, value: str):
         """Picks a value from an OrangeHRM dropdown by its visible label."""
         self.group_by_label(label).locator(self._SELECT_TRIGGER).click()
         exact_value = re.compile(rf"^{re.escape(value)}$")
