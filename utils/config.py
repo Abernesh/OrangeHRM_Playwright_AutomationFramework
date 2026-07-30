@@ -32,3 +32,9 @@ LOGIN_URL = f"{BASE_URL}/web/index.php/auth/login"
 API_URL = f"{BASE_URL}/web/index.php/api/v2"
 USERNAME = CONFIG["username"]
 PASSWORD = CONFIG["password"]
+
+# Timeouts in milliseconds. The public demo site regularly exceeds Playwright's
+# 30s defaults - it has been seen taking over 30s to serve the login page alone.
+NAVIGATION_TIMEOUT_MS = 90_000
+ELEMENT_TIMEOUT_MS = 60_000
+TOAST_TIMEOUT_MS = 15_000

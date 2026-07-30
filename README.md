@@ -60,6 +60,7 @@ pytest.ini                 pytest, report and video configuration
 requirements.txt           pinned dependencies
 
 pages/                     Page Object Model
+  base_page.py               shared OrangeHRM widget helpers (labels, dropdowns, toasts)
   login_page.py              login, dashboard check, logout
   pim_page.py                add / search / edit / delete employee, job details
 
@@ -67,8 +68,8 @@ tests/
   test_lifecycle.py          the end-to-end lifecycle test
 
 utils/
-  config.py                  paths and settings, anchored to the project root
-  api_base.py                OrangeHRM API validation and test-data cleanup
+  config.py                  paths, settings and timeouts, anchored to the project root
+  api_client.py              OrangeHRM API validation and test-data cleanup
   reporter.py                step recording and screenshot evidence
 
 data/
@@ -83,7 +84,11 @@ videos/                    generated test run recording
 ### Design notes
 
 - **Page Object Model** - every locator and UI action lives in `pages/`; the test
-  reads as the business flow and contains no selectors.
+  reads as the business flow and contains no selectors. `BasePage` holds the
+  OrangeHRM widget helpers (label-anchored fields, dropdowns, toasts) that the
+  individual pages share.
+- **Logging** - each meaningful action logs a line, shown live during the run and
+  captured in the HTML report.
 - **Descriptive assertions** - each assertion carries a message naming the actual
   and expected value, e.g.
   `API vs UI mismatch on Job Title: API=QA Lead UI=QA Engineer`.

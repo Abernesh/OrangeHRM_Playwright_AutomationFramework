@@ -1,22 +1,22 @@
 # Package: tests
 # Function: test_employee_lifecycle
 
+import json
 import random
 
 from utils import config
-from utils.api_base import APIBase
 from utils.reporter import Reporter
 
 test_data = config.load_json("employee.json")
 
 
-def unique_employee_id():
+def unique_employee_id() -> str:
     """The demo site is shared and rejects duplicate ids, so each run needs its
     own. Prefix comes from the test data; the 6-digit suffix is random."""
     return f"{test_data['employee_id_prefix']}{random.randint(100000, 999999)}"
 
 
-def test_employee_lifecycle(page, logged_in, pim_page, employee_cleanup):
+def test_employee_lifecycle(page, logged_in, pim_page, employee_api, employee_cleanup):
     """Login and the logout safety net are handled by the logged_in fixture."""
     employee_id = unique_employee_id()
 
@@ -54,17 +54,17 @@ def test_employee_lifecycle(page, logged_in, pim_page, employee_cleanup):
             f"Employment Status not reflected in UI: {ui_job_details['employment_status']}"
 
     with Reporter.step("Cross-check the API against the UI"):
-        # Each raises with a specific mismatch message if the API disagrees.
-        APIBase.verify_employee_exists(
-            page, employee_id, test_data["first_name"], test_data["last_name"]
+        # Each verify raises with a specific mismatch message if the API disagrees.
+        employee_api.verify_employee_exists(
+            employee_id, test_data["first_name"], test_data["last_name"]
         )
-        APIBase.verify_job_details(
-            page,
-            employee_id,
+        api_job_details = employee_api.job_details(employee_id)
+        employee_api.verify_job_details(
+            api_job_details,
             ui_job_details["job_title"],
-            ui_job_details["employment_status"]
+            ui_job_details["employment_status"],
         )
-        Reporter.attach("API job details", str(APIBase.get_job_details(page, employee_id)))
+        Reporter.attach("API job details", json.dumps(api_job_details, indent=2))
 
     with Reporter.step("Delete the employee"):
         pim_page.search_employee_by_id(employee_id)
@@ -72,7 +72,7 @@ def test_employee_lifecycle(page, logged_in, pim_page, employee_cleanup):
         assert pim_page.is_success_toast_displayed(), "Employee deletion failed on UI"
 
     with Reporter.step("Confirm the deletion via the API"):
-        APIBase.verify_employee_deleted(page, employee_id)
+        employee_api.verify_employee_deleted(employee_id)
         # Deleted for real, so the teardown has nothing left to clean up.
         employee_cleanup.remove(employee_id)
 

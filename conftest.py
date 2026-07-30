@@ -8,7 +8,7 @@ from pages.pim_page import PIMPage
 # Aliased: pytest hookspecs require the parameter name "config", so the module
 # cannot share that name here.
 from utils import config as settings
-from utils.api_base import APIBase
+from utils.api_client import EmployeeApi
 from utils.reporter import Reporter
 
 # The browser/context/page fixtures come from pytest-playwright.
@@ -16,14 +16,13 @@ from utils.reporter import Reporter
 
 @pytest.fixture(autouse=True)
 def evidence(page):
-    """Binds the reporter to this test's page and clears the previous run's steps.
+    """Binds the reporter to this test's page and raises the timeouts.
 
-    Also raises the timeouts: the public demo site regularly exceeds
-    Playwright's 30s defaults, and has been seen taking 37s to serve the
-    login page alone.
+    The public demo site regularly exceeds Playwright's 30s defaults, so the
+    waits are widened before anything touches the page.
     """
-    page.set_default_navigation_timeout(90_000)
-    page.set_default_timeout(60_000)
+    page.set_default_navigation_timeout(settings.NAVIGATION_TIMEOUT_MS)
+    page.set_default_timeout(settings.ELEMENT_TIMEOUT_MS)
     Reporter.reset(page)
     yield
 
@@ -31,6 +30,12 @@ def evidence(page):
 @pytest.fixture
 def pim_page(page):
     return PIMPage(page)
+
+
+@pytest.fixture
+def employee_api(page):
+    """API client sharing the browser's session cookie."""
+    return EmployeeApi(page)
 
 
 @pytest.fixture
@@ -57,7 +62,7 @@ def logged_in(page, evidence):
 
 
 @pytest.fixture
-def employee_cleanup(page, logged_in):
+def employee_cleanup(employee_api, logged_in):
     """Removes records the test created, so a failed run leaves nothing behind.
 
     Depends on logged_in so that it tears down *before* the logout - the
@@ -65,9 +70,9 @@ def employee_cleanup(page, logged_in):
     """
     created = []
     yield created
-    for emp_id in created:
-        if APIBase.delete_employee_if_exists(page, emp_id):
-            print(f"Cleaned up leftover employee {emp_id}")
+    for employee_id in created:
+        if employee_api.delete_if_exists(employee_id):
+            print(f"Cleaned up leftover employee {employee_id}")
 
 
 # ------------------------------------------------------------------------ report
